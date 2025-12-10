@@ -1,4 +1,3 @@
-#include <cstddef>
 #include <iostream>
 using namespace std;
 template <typename T> class Node {
@@ -24,6 +23,7 @@ public:
   Node<T> *Head;
   Node<T> *Tail;
   LinkedList();
+  ~LinkedList();
   Node<T> *Get(int index);
 
   void InsertHead(T val);
@@ -44,6 +44,14 @@ template <typename T> LinkedList<T>::LinkedList() {
   m_count = 0;
   Head = NULL;
   Tail = NULL;
+}
+template<typename T> LinkedList<T>::~LinkedList(){
+  Node<T> *cb = Head;
+  while (cb != NULL) {
+    Node<T> *next = cb->Next;
+    delete cb;
+    cb = next;
+  }
 }
 
 template <typename T> Node<T> *LinkedList<T>::Get(int index) {
@@ -123,6 +131,8 @@ template <typename T> void LinkedList<T>::RemoveTail() {
   while (tail->Next->Next != NULL) {
     tail = tail->Next;
   }
+  delete Tail;
+  Tail = tail;
   tail->Next = NULL;
   m_count--;
 }
@@ -131,9 +141,9 @@ template <typename T> void LinkedList<T>::RemoveHead() {
     return;
   }
   Node<T> *node = Head;
-  Node<T> *newHead = Head->Next;
-  Head->Next = NULL;
+  Node<T> *newHead = node->Next;
   Head = newHead;
+  delete node;
   m_count--;
 }
 template <typename T> void LinkedList<T>::Remove(int index) {
@@ -148,11 +158,12 @@ template <typename T> void LinkedList<T>::Remove(int index) {
     return;
   }
   Node<T> *node = Head;
-  Node<T> *temp = Head;
+  Node<T> *temp;
   for (int i = 0; i < index - 1; ++i) {
     node = node->Next;
   }
   temp = node->Next->Next;
+  delete node->Next;
   node->Next = temp;
   m_count--;
 }
